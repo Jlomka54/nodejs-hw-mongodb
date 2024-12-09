@@ -10,13 +10,13 @@ export const setupServer = () => {
   app.use(express.json());
   app.use(cors());
 
-  app.use(
-    pino({
-      transport: {
-        target: 'pino-pretty',
-      },
-    }),
-  );
+  // app.use(
+  //   pino({
+  //     transport: {
+  //       target: 'pino-pretty',
+  //     },
+  //   }),
+  // );
 
   app.get('/contacts', async (req, res) => {
     const data = await getAllContacts();
@@ -28,8 +28,9 @@ export const setupServer = () => {
     });
   });
 
-  app.get('/contacts/:contactsid', async (req, res, next) => {
+  app.get('/contacts/:contactId', async (req, res, next) => {
     const { contactId } = req.params;
+
     const contacts = await getContactById(contactId);
 
     // Відповідь, якщо контакт не знайдено

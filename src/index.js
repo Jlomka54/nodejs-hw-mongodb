@@ -1,5 +1,3 @@
-// src/index.js
-
 import { initMongoConnection } from './db/initMongoDB.js';
 import { setupServer } from './server.js';
 

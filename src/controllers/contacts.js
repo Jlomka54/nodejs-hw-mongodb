@@ -8,7 +8,7 @@ import {
 } from '../services/contacts.js';
 import createHttpError from 'http-errors';
 
-export const getContactsControler = async (req, res, next) => {
+export const getContactsControler = async (req, res) => {
   const data = await getAllContacts();
 
   res.status(200).json({
@@ -18,7 +18,7 @@ export const getContactsControler = async (req, res, next) => {
   });
 };
 
-export const getContactsByIdControler = async (req, res, next) => {
+export const getContactsByIdControler = async (req, res) => {
   const { contactId } = req.params;
 
   const contacts = await getContactById(contactId);
@@ -37,7 +37,7 @@ export const getContactsByIdControler = async (req, res, next) => {
 };
 
 export const createContactController = async (req, res) => {
-  const contact = createContact(req.body);
+  const contact = await createContact(req.body);
   res.status(201).json({
     status: 201,
     message: `Successfully created a contact!`,
@@ -45,24 +45,23 @@ export const createContactController = async (req, res) => {
   });
 };
 
-export const deleteContactController = async (req, res, next) => {
+export const deleteContactController = async (req, res) => {
   const { contactId } = req.params;
-  const contact = deleteContact(contactId);
+  const contact = await deleteContact(contactId);
   if (!contact) {
-    next(createError(404, 'Student not found'));
+    throw createError(404, 'Contact not found');
   }
   res.status(204).send();
 };
 
-export const upsertContactController = async (req, res, next) => {
+export const upsertContactController = async (req, res) => {
   const { contactId } = req.params;
   const result = await updateContact(contactId, req.body, {
     upsert: true,
   });
 
   if (!result) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+    throw createHttpError(404, 'Contact not found');
   }
   const status = result.isNew ? 201 : 200;
 
@@ -73,13 +72,12 @@ export const upsertContactController = async (req, res, next) => {
   });
 };
 
-export const patchContactController = async (req, res, next) => {
+export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
   const result = await updateContact(contactId, req.body);
 
   if (!result) {
-    next(createHttpError(404, 'Contact not found'));
-    return;
+    throw createHttpError(404, 'Contact not found');
   }
   res.json({
     status: 200,

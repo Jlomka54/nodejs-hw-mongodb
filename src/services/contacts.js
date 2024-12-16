@@ -7,10 +7,9 @@ export const getContactById = async (contactId) => {
   return contact;
 };
 
-export const createContact = async (contactData) => {
-  const newContact = await ContactsCollection.create(contactData);
-  return newContact;
-};
+export const createContact = (contactData) =>
+  ContactsCollection.create(contactData);
+
 export const deleteContact = async (contactId) => {
   const contact = await ContactsCollection.findOneAndDelete({
     _id: contactId,

@@ -7,11 +7,16 @@ import {
 import { setupSession } from '../utils/setupSession.js';
 
 export const authRegisterController = async (req, res) => {
-  await userRegister(req.body);
+  const user = await userRegister(req.body);
+  console.log(user);
 
   res.status(201).json({
     status: 201,
-    message: 'Successfully registered user',
+    message: 'Successfully registered a user!',
+    data: {
+      name: user.name,
+      email: user.email,
+    },
   });
 };
 
@@ -29,8 +34,9 @@ export const userLoginController = async (req, res) => {
 };
 
 export const refreshTokenController = async (req, res) => {
-  const { refreshToken, sesionId } = req.cookies;
-  const session = await refreshUserToken(refreshToken, sesionId);
+  const { refreshToken, sessionId } = req.cookies;
+
+  const session = await refreshUserToken(refreshToken, sessionId);
 
   setupSession(res, session);
 

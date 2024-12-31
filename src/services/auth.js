@@ -52,10 +52,10 @@ export const userLogin = async ({ email, password }) => {
   });
 };
 
-export const refreshUserToken = async ({ payload }) => {
+export const refreshUserToken = async (refreshToken, sessionId) => {
   const oldSession = await SessionCollection.findOne({
-    _id: payload.sessionId,
-    refreshToken: payload.refreshToken,
+    _id: sessionId,
+    refreshToken: refreshToken,
   });
   if (!oldSession) {
     throw createHttpError(401, 'Session not found');
@@ -64,7 +64,7 @@ export const refreshUserToken = async ({ payload }) => {
     throw createHttpError(401, 'Refresh token expired');
   }
 
-  await SessionCollection.deleteOne({ _id: payload.sessionId });
+  await SessionCollection.deleteOne({ _id: sessionId });
 
   const sessionDate = createSessionDate();
 

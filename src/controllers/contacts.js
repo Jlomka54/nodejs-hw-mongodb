@@ -80,6 +80,7 @@ export const upsertContactController = async (req, res) => {
   const result = await updateContact(
     contactId,
     { ...req.body, userId },
+    userId,
     {
       upsert: true,
     },

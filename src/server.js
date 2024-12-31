@@ -16,13 +16,13 @@ export const setupServer = () => {
   app.use(cors());
   app.use(cookieParser());
 
-  app.use(
-    pino({
-      transport: {
-        target: 'pino-pretty',
-      },
-    }),
-  );
+  // app.use(
+  //   pino({
+  //     transport: {
+  //       target: 'pino-pretty',
+  //     },
+  //   }),
+  // );
   app.use(authRouter);
   app.use(contactsRouter);
 

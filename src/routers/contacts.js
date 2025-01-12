@@ -8,6 +8,7 @@ import {
 } from '../validation/contacts.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/upload.js';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.get(
 );
 router.post(
   '/contacts',
+  upload.single('photo'),
   validateBody(contactsAddSchema),
   ctrWrapper(ContactsController.createContactController),
 );
@@ -32,14 +34,15 @@ router.delete(
 
 router.put(
   '/contacts/:contactId',
+  upload.single('photo'),
   isValidId,
   validateBody(contactsAddSchema),
-
   ctrWrapper(ContactsController.upsertContactController),
 );
 
 router.patch(
   '/contacts/:contactId',
+  upload.single('photo'),
   isValidId,
   validateBody(contactsUpdateSchema),
   ctrWrapper(ContactsController.patchContactController),

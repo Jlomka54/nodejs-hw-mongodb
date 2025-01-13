@@ -29,7 +29,7 @@ authRouter.post(
   ctrWrapper(authController.refreshTokenController),
 );
 authRouter.post(
-  '/auth/request-reset-email',
+  '/auth/send-reset-email',
   validateBody(requestResetEmailSchema),
   ctrWrapper(authController.requestResetEmailController),
 );

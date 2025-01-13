@@ -57,13 +57,20 @@ export const getContactsByIdControler = async (req, res) => {
 };
 
 export const createContactController = async (req, res) => {
-  let photo;
-  if (req.file) {
-    photo = await saveFileToUploadsDir(req.file);
+  const photo = req.file;
+
+  let photoUrl;
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadsDir(photo);
+    }
   }
+
   const { _id: userId } = req.user;
 
-  const contact = await createContact({ ...req.body, photo, userId });
+  const contact = await createContact({ ...req.body, photo: photoUrl, userId });
   res.status(201).json({
     status: 201,
     message: `Successfully created a contact!`,
@@ -108,25 +115,9 @@ export const upsertContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
   const { _id: userId } = req.user;
-
-  const result = await updateContact(contactId, req.body, userId);
-
-  if (!result) {
-    throw createHttpError(404, 'Contact not found');
-  }
-  res.json({
-    status: 200,
-    massage: `Successfully patched a contact!`,
-    data: result.contact,
-  });
-};
-
-export const patchStudentController = async (req, res, next) => {
-  const { studentId } = req.params;
   const photo = req.file;
 
   let photoUrl;
-
   if (photo) {
     if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
       photoUrl = await saveFileToCloudinary(photo);
@@ -135,19 +126,18 @@ export const patchStudentController = async (req, res, next) => {
     }
   }
 
-  const result = await updateContact(studentId, {
-    ...req.body,
-    photo: photoUrl,
-  });
+  const result = await updateContact(
+    contactId,
+    { ...req.body, photo: photoUrl },
+    userId,
+  );
 
   if (!result) {
-    next(createHttpError(404, 'Student not found'));
-    return;
+    throw createHttpError(404, 'Contact not found');
   }
-
   res.json({
     status: 200,
-    message: `Successfully patched a student!`,
-    data: result.student,
+    massage: `Successfully patched a contact!`,
+    data: result.contact,
   });
 };

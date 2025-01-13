@@ -12,6 +12,7 @@ export const CLOUDINARY = {
   CLOUD_NAME: 'CLOUD_NAME',
   API_KEY: 'API_KEY',
   API_SECRET: 'API_SECRET',
+  ENABLE_CLOUDINARY: 'ENABLE_CLOUDINARY',
 };
 
 export const TEMP_UPLOAD_DIR = path.resolve('temp');

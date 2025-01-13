@@ -12,6 +12,8 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 import { sortByList } from '../db/models/Contact.js';
 import { ParseContactsFiltersParams } from '../utils/filters/ParseContactsFiltersParams.js';
 import { saveFileToUploadsDir } from '../utils/saveFileToUploadsDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const getContactsControler = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -116,5 +118,36 @@ export const patchContactController = async (req, res) => {
     status: 200,
     massage: `Successfully patched a contact!`,
     data: result.contact,
+  });
+};
+
+export const patchStudentController = async (req, res, next) => {
+  const { studentId } = req.params;
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadsDir(photo);
+    }
+  }
+
+  const result = await updateContact(studentId, {
+    ...req.body,
+    photo: photoUrl,
+  });
+
+  if (!result) {
+    next(createHttpError(404, 'Student not found'));
+    return;
+  }
+
+  res.json({
+    status: 200,
+    message: `Successfully patched a student!`,
+    data: result.student,
   });
 };
